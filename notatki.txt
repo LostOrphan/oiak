@@ -1,0 +1,2 @@
+x/b [adres] -> wyswietlenie zawartosci (s-string, x-hex) 
+zamiana zawartosc string: set *(char*)(nazwa_zmiennej+pozycja)='ascii'
