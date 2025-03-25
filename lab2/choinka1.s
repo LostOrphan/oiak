@@ -1,0 +1,130 @@
+.section .data
+
+star: .ascii "*"
+prompt: .ascii "Podaj wysokosc choinki: "
+promptLen= . - prompt
+space: .ascii " "
+newLine: .ascii "\n"
+colorGreen: .asciz "\033[32m"
+colorBrown: .asciz "\033[33m"
+colorReset: .asciz "\033[0m"
+colorLen= . - colorGreen
+colorResetLen= . - colorReset
+
+.section .bss
+
+height: .skip 4
+
+.section .text
+
+.global _start
+_start:
+	#Wypisanie prompta
+	mov $1, %rax
+	mov $1, %rdi
+	mov $prompt, %rsi
+	mov $promptLen, %rdx
+	syscall
+	#Wpisanie wartosci do programu
+	mov $0, %rax
+	mov $0, %rdi
+	mov $height, %rsi
+	mov $4, %rdx
+	syscall
+	#Wartosc traktowana jako ASCII, konwersja do int'a
+	movzbl height, %eax
+	sub $'1', %eax
+	mov %eax, %r9d 		#r9d ebx przechowuje wysokosc drzewa-1 bo pieniek
+	#Choinka
+	mov $1, %r10d		#r10d ecx iterator zaczynajac od 1
+	
+	movq $1, %rax
+	movq $1, %rdi
+	movq $colorGreen, %rsi
+	movq $5, %rdx
+	syscall
+loopRows:
+				#r8d edi przechowuje ilosc spacji
+	cmp %r9d, %r10d
+	jg finalSpace
+	mov %r9d, %eax
+	sub %r10d, %eax
+	add $1, %eax
+	mov %eax, %r8d
+
+loopSpacesPrint:
+	cmp $0, %r8d
+	jle loopStars
+	mov $1, %rax
+	mov $1, %rdi
+	mov $space, %rsi
+	mov $1, %rdx
+	syscall
+	dec %r8d
+	jmp loopSpacesPrint
+
+loopStars:
+				#r8d edi przechowuje ilosc gwiazdek
+	mov %r10d, %r8d	
+	shl $1, %r8d
+	dec %r8d
+
+loopStarsPrint:
+	cmp $0, %r8d
+	jle printNewline
+	mov $1, %rax
+	mov $1, %rdi
+	mov $star, %rsi
+	mov $1, %rdx
+	syscall
+	dec %r8d
+	jmp loopStarsPrint
+
+printNewline:
+	mov $1, %rax
+	mov $1, %rdi
+	mov $newLine, %rsi
+	mov $1, %rdx
+	syscall
+	inc %r10d
+	jmp loopRows
+
+finalSpace:
+	cmp $0, %r9d
+	jle finalStar
+	mov $1, %rax
+	mov $1, %rdi
+	mov $space, %rsi
+	mov $1, %rdx
+	syscall
+	dec %r9d
+	jmp finalSpace
+	
+finalStar:
+	movq $1, %rax
+	movq $1, %rdi
+	movq $colorBrown, %rsi
+	movq $5, %rdx
+	syscall
+
+	mov $1, %rax
+	mov $1, %rdi
+	mov $star, %rsi
+	mov $1, %rdx
+	syscall
+	mov $1, %rax
+	mov $1, %rdi
+	mov $newLine, %rsi
+	mov $1, %rdx
+	syscall
+	
+	movq $1, %rax
+	movq $1, %rdi
+	movq $colorReset, %rsi
+	movq $4, %rdx
+	jmp exit
+	#Zamkniecie programu
+exit:
+	mov $60, %rax
+	xor %rdi, %rdi
+	syscall

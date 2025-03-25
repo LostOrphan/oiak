@@ -35,9 +35,10 @@ _start:
 #	mov %eax, height	#height posiada wartosc jako int
 #	mov $height, %ebx
 	mov %eax, %ebx
+	mov $0, %ecx
 	#Choinka
 loop_rows:
-	cmp %ebx, %ecx	#for loop az ecx>height
+	cmp %ecx, %ebx	#for loop az ecx>height
 	jg exit
 	#edi zawiera ilosc spacji w danej linii
 	mov %ebx, %eax
