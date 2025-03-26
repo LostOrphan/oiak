@@ -31,10 +31,37 @@ _start:
 	mov $height, %rsi
 	mov $4, %rdx
 	syscall
-	#Wartosc traktowana jako ASCII, konwersja do int'a
-	movzbl height, %eax
-	sub $'1', %eax
-	mov %eax, %r9d 		#r9d ebx przechowuje wysokosc drzewa-1 bo pieniek
+	# Ten sposob dziala tylko dla liczb jednocyfrowych
+#	#Wartosc traktowana jako ASCII, konwersja do int'a
+	#movzbl height, %eax
+	#sub $'1', %eax
+	#mov %eax, %r9d 		#r9d ebx przechowuje wysokosc drzewa-1 bo pieniek
+	# Sposob dla liczb wielocyfrowych
+
+
+	mov $0, %rax
+#	mov height, %rsi
+	lea height(%rip), %rsi
+loopConvert:
+	mov (%rsi), %al
+	movzbl %al, %ebx
+	cmp $10, %ebx 		#newline check
+	je convertStore
+	cmp $'0', %ebx
+	jle convertStore
+	
+	cmp $'9', %ebx
+	jge convertStore
+	sub $'0', %ebx
+	imul $10, %r12
+	add %ebx, %r12d
+	
+	inc %rsi
+	jmp loopConvert
+
+convertStore:
+	mov %r12, %r9 		#r9d przechowuje wysokosc drzewa
+	sub $1, %r9d		#minus 1 bo pieniek
 	#Choinka
 	mov $1, %r10d		#r10d ecx iterator zaczynajac od 1
 	
@@ -70,7 +97,7 @@ loopStars:
 	dec %r8d
 
 loopStarsPrint:
-	cmp $0, %r8d
+	#cmp $0, %r8d
 	jle printNewline
 	mov $1, %rax
 	mov $1, %rdi
