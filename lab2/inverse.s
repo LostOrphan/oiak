@@ -1,7 +1,8 @@
 	.section .data
-message: .asciz "Hello World\n"
+message: .ascii "Hello World\n"
 message_len= . - message
-.lcomm buffer, 20
+.section .bss
+buffer: .skip 20
 	.section .text
 .global _start
 
@@ -18,12 +19,12 @@ _start:
 	mov $buffer, %rdi
 loop:
 	movzb (%rsi), %rax	#message do rax
-	test %al, %al		#Warunek zakonczenia petli. bitwise AND operacja, szukamy zakonczenia stringu (zero)
-	jz koniec
+#	test %al, %al		#Warunek zakonczenia petli. bitwise AND operacja, szukamy zakonczenia stringu (zero)
+	#jz koniec
 	cmp $' ', %al		#
 	je zapisz		#Hardcoded spacja i newline
 	cmp $'\n', %al		#
-	je zapisz		#
+	je koniec		#
 	cmp $'A', %al
 	jl skip
 	cmp $'Z', %al
@@ -43,6 +44,7 @@ skip:
 	inc %rdi
 	jmp loop
 koniec:
+	mov %al, (%rdi)
 	mov $1, %rax		
 	mov $1, %rdi
 	mov $buffer, %rsi

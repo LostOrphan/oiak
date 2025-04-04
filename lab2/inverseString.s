@@ -5,7 +5,7 @@ tekstLen: .skip 4
 .global _start
 
 _start:
-	#wypisanie podstawowego Hello World
+	#Wpisanie stringu
 	mov $0, %rax
 	mov $0, %rdi
 	mov $tekstin, %rsi

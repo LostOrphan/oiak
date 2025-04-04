@@ -10,10 +10,9 @@ _start:
 	mov $tekst, %rsi
 	mov $256, %rdx
 	syscall
-	#rcx- dlugosc tekstu - \nl -> length
-	mov %rax, %rcx
-	dec %rcx
-	mov %cl, length(%rip)
+	#rax- dlugosc tekstu - \nl -> length
+	dec %rax
+	mov %rax, length(%rip)
 	
 	#sortowanie bubble sortem
 bubbleSort:
@@ -34,8 +33,8 @@ innerLoop:
 	cmp $'\n', %bl
 	je skipSwap
 	#if tekst[j]>tekst[j+1] swap
-	cmp %bl, %al
-	jle skipSwap
+	cmp %al, %bl
+	jg skipSwap
 	movb %bl, (%rdx, %rsi, 1)
 	movb %al, 1(%rdx, %rsi, 1)
 skipSwap:

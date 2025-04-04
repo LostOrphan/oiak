@@ -1,12 +1,12 @@
 .section .bss
-	array: .space 4 #(4 liczby po 4 bity)
+	array: .space 4 #(4 liczby po 1 bajcie)
 .section .text
 .global _start
 _start:
 	lea array(%rip), %rsi 	#adres tablicy do rsi
 	movb $1, (%rsi)
-	movb $2, 1(%rsi)		#4*rsi (przesuniecie adresu na nastepna pozycje)
-	movb $3, 2(%rsi)		#8, kolejne skoki co 4 (bo 4 bity per liczba)
+	movb $2, 1(%rsi)		#1*rsi (przesuniecie adresu na nastepna pozycje)
+	movb $3, 2(%rsi)		#2, kolejne skoki co 1 (bo 1 bajt per liczba)
 	movb $4, 3(%rsi)
 	
 	#ladowanie do rejestru

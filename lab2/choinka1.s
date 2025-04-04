@@ -44,7 +44,7 @@ _start:
 	lea height(%rip), %rsi
 loopConvert:
 	mov (%rsi), %al
-	movzbl %al, %ebx
+	movzbl %al, %ebx	#mov 8 to 32 z zerami po lewej stronie
 	cmp $10, %ebx 		#newline check
 	je convertStore
 	cmp $'0', %ebx
