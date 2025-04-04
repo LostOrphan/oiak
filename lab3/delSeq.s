@@ -2,6 +2,14 @@
 	textin: .skip 256
 	pattern: .skip 256
 	textout: .skip 256
+	
+	textpointer: .skip 1
+	patternpointer: .skip 1
+	
+	textlen: .skip 1
+	patternlen: .skip 1
+
+	patternfirst: .skip 1
 .section .text
 .global _start
 _start:
@@ -10,30 +18,23 @@ _start:
 	mov $textin, %rsi
 	mov $256, %rdx
 	syscall
-					#r8-dlugosc tekstu wejciowego
-	mov %rax, %r8
+	
+	mov %rax, textlen(%rip)
 	
 	mov $0, %rax
 	mov $0, %rdi
 	mov $pattern, %rsi
 	mov $256, %rdx
 	syscall
-					#r9- dlugosc patternu minus \n
-	mov %rax, %r9
-	dec %r9				#minus \n
-	#iteracja przez tekst az nie znajdziemy 1 znaku patternu
-	mov $0, %rdi
-	movb pattern(%rdi), %r10b	#r10- pierwsza litera patternu
+	dec %rax
+	
+	mov %rax, patternlen(%rip)
 
-	mov , %rsi
-	mov $textout, %rdi
+	mov $0, textpointer(%rip)
+	mov $0, patterpointer(%rip)
 	
-loopMain:
-	cmp %r8, %rcx			#check czy przeszlismy tekst
-	je end
-	
-		
-end:
+	mov pattern(%rip), %rsi
+	lea (%rsi), patternfirst(%rip)
 	mov $60, %rax
 	mov $0, %rdi
 	syscall	

@@ -19,7 +19,7 @@ _start:
 bubbleSort:
 	mov $0, %rdi		# i=0
 outerLoop:
-	cmp length(%rip), %dil #       
+	cmp length(%rip), %rdi #       
 	jge endSort		#if i>=length end
 	mov $0, %rsi		#j=0
 innerLoop:

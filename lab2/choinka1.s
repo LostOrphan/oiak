@@ -5,9 +5,9 @@ prompt: .ascii "Podaj wysokosc choinki: "
 promptLen= . - prompt
 space: .ascii " "
 newLine: .ascii "\n"
-colorGreen: .asciz "\033[32m"
-colorBrown: .asciz "\033[33m"
-colorReset: .asciz "\033[0m"
+colorGreen: .ascii "\033[32m"
+colorBrown: .ascii "\033[33m"
+colorReset: .ascii "\033[0m"
 colorLen= . - colorGreen
 colorResetLen= . - colorReset
 
@@ -48,10 +48,10 @@ loopConvert:
 	cmp $10, %ebx 		#newline check
 	je convertStore
 	cmp $'0', %ebx
-	jle convertStore
+	jl convertStore
 	
 	cmp $'9', %ebx
-	jge convertStore
+	jg convertStore
 	sub $'0', %ebx
 	imul $10, %r12
 	add %ebx, %r12d
@@ -65,10 +65,10 @@ convertStore:
 	#Choinka
 	mov $1, %r10d		#r10d ecx iterator zaczynajac od 1
 	
-	movq $1, %rax
-	movq $1, %rdi
-	movq $colorGreen, %rsi
-	movq $5, %rdx
+	mov $1, %rax
+	mov $1, %rdi
+	mov $colorGreen, %rsi
+	mov $5, %rdx
 	syscall
 loopRows:
 				#r8d edi przechowuje ilosc spacji
@@ -128,10 +128,10 @@ finalSpace:
 	jmp finalSpace
 	
 finalStar:
-	movq $1, %rax
-	movq $1, %rdi
-	movq $colorBrown, %rsi
-	movq $5, %rdx
+	mov $1, %rax
+	mov $1, %rdi
+	mov $colorBrown, %rsi
+	mov $5, %rdx
 	syscall
 
 	mov $1, %rax
@@ -145,10 +145,10 @@ finalStar:
 	mov $1, %rdx
 	syscall
 	
-	movq $1, %rax
-	movq $1, %rdi
-	movq $colorReset, %rsi
-	movq $4, %rdx
+	mov $1, %rax
+	mov $1, %rdi
+	mov $colorReset, %rsi
+	mov $4, %rdx
 	jmp exit
 	#Zamkniecie programu
 exit:

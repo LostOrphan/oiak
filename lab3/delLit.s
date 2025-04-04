@@ -19,11 +19,11 @@ _start:
 	#przejscie przez kazdy znak, pomijajac te ktorych nie chcemy
 	#zakladam usuwanie duzych liter i spacji
 loopFilter:
-	movb (%rsi), %al
-	cmpb $10, %al	#newline check
+	mov (%rsi), %al
+	cmp $10, %al	#newline check
 	je printResult
 	
-	cmpb $'A', %al	#uppercase check
+	cmp $'A', %al	#uppercase check
 	jge checkUpper
 	
 	cmpb $' ', %al	#space check
@@ -31,7 +31,7 @@ loopFilter:
 	jmp storeChar
 
 checkUpper:
-	cmpb $'Z', %al
+	cmp $'Z', %al
 	jle skipChar
 	jmp storeChar
 
