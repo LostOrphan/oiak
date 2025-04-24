@@ -1,68 +1,104 @@
-#Wydrukowac parametry linii polecen i srodowisko wykonania programu
 .section .data
-newline: .ascii "\n"
-number: .byte 0
+newline : .ascii "\n"
+.section .bss
+argc : .skip 8
+argv : .skip 8
+buffer : .skip 1       
+
 .section .text
 .global _start
 _start:
-	#rsp=argc
-	#rsp+8 (co bajt)=argv
-	#rsp po NULL=envp
-	#rsp= stack pointer
-	mov (%rsp), %r9		#r9-argc
-	call printNum
-	lea 8(%rsp), %rsi
-	mov $0, %rcx
-	mov $0, %r10
-argv:
-#	cmp %rcx, %r9
-#	jge end
-	mov (%rsi), %rdi
-	test %rdi, %rdi
-	#jz findEnvp
- 	jz end
-#	mov (%rsi,%r10,8),%rdi
-	call print
-	add $8, %rsi
-#	inc %r10	
-#inc %rcx
-	jmp argv
-print:
-			#zapisanie rdi na stack
-	push %rdi
-	mov %rdi, %rsi
-	xor %rcx, %rcx		#wyzerowanie rcx
+	# Najpierw argc na stosie
+	# Następnie tablica argv zawierająca wskaźniki do argumentów
+	# Koniec NULL
+	mov %rsp, %rbx
+	mov (%rbx), %rax
+	mov %rax, argc(%rip)	# argc
+	call writeNum
+	lea 8(%rbx), %rcx	# argv (jeden bajt przesunięcia)
+	mov %rcx, argv(%rip)	# aktualny adres argv
+
+	mov argc(%rip), %rax	# argc
+	test %rax, %rax         # if (argc == 0)
+	jz end
+	mov argv(%rip), %rbx	# argv->rbx
+printArg:
+	mov (%rbx), %rsi		# wczytaj pointer do argumentu
+	test %rsi, %rsi			# if (argv[i] == NULL)
+	jz moveEnvp
+
+	mov %rsi, %rdi			# rdi = argv[i]
+	xor %rcx, %rcx			# rcx = 0 (Długość argumentu)
 findLen:
-	cmp $0, (%rdi, %rcx)	#rsi+rcx
-	je write
+	cmpb $0, (%rdi, %rcx)	# jezeli koniec stringa (string null terminated)
+	je writeArg
 	inc %rcx
 	jmp findLen
-write:
-	mov $1, %rax
-	mov $1, %rdi
-	mov %rsi, %rsi
-	mov %rcx, %rdx
+writeArg:
+	mov $1 , %rax
+	mov $1 , %rdi			
+	mov %rsi, %rsi			#rsi pointer do argumentu
+	mov %rcx, %rdx			# rcx = długość argumentu
 	syscall
-writeNL:
-	mov $1, %rax
-	mov $1, %rdi
+
+	#new line
+	mov $1 , %rax
+	mov $1 , %rdi
 	lea newline(%rip), %rsi
-	mov $1, %rdx
+	mov $1 , %rdx
 	syscall
-	pop %rdi
+	
+	add $8, %rbx			# przesunięcie o bajt, nowy argument
+	jmp printArg			# jeżeli więcej argumentów->printArg
+writeNum:
+	push %rax				#zapis stanu RAX
+	add $'0', %al		
+	mov $1 , %rdi
+	lea buffer(%rip), %rsi
+	mov %al, (%rsi)         # zapisanie liczby do bufora
+	mov $1 , %rax
+	mov $1 , %rdx
+	syscall
+	
+	#new line
+	mov $1 , %rax
+	mov $1 , %rdi
+	lea newline(%rip), %rsi
+	mov $1 , %rdx
+	syscall
+	pop %rax				#przywrócenie stanu RAX
 	ret
-printNum:
-	push %rdi
-	add $'0', %r9
-	mov %r9b, number(%rip)
-	mov $1, %rax
-	mov $1, %rdi
-	lea number(%rip), %rsi
-	mov $1, %rdx
+moveEnvp:
+	add $8, %rbx
+printEnvp:
+	mov (%rbx), %rsi		# wczytaj pointer do argumentu
+	test %rsi, %rsi			# if (argv[i] == NULL)
+	jz end
+
+	mov %rsi, %rdi			# rdi = argv[i]
+	xor %rcx, %rcx			# rcx = 0 (Długość argumentu)
+findEnvLen:
+	cmpb $0, (%rdi, %rcx)	# jezeli koniec stringa (string null terminated)
+	je writeEnv
+	inc %rcx
+	jmp findEnvLen
+writeEnv:
+	mov $1 , %rax
+	mov $1 , %rdi			
+	mov %rsi, %rsi			#rsi pointer do argumentu
+	mov %rcx, %rdx			# rcx = długość argumentu
 	syscall
-	jmp writeNL
-		
+
+	#new line
+	mov $1 , %rax
+	mov $1 , %rdi
+	lea newline(%rip), %rsi
+	mov $1 , %rdx
+	syscall
+	
+	add $8, %rbx			# przesunięcie o bajt, nowy argument
+	jmp printEnvp			# jeżeli więcej argumentów->printEnvp
 end:
-	mov $60, %rax
-	mov $0, %rdi
-	syscall	
+	mov $60, %rax			
+	xor %rdi, %rdi			
+	syscall
