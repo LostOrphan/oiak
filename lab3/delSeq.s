@@ -60,14 +60,14 @@ no_newline_pattern:
 	returnFunctionFalse:
     #Zapis znaku do textout
 	mov %al, (%rdi)
+	inc %rdi
+	inc %rsi
 	returnFunctionTrue:
     #jezeli newline wypisz string
 	cmp $10, %al
 	je stringPrint
 
     #przesun pointery
-	inc %rdi
-	inc %rsi
 	jmp loopLetter
 
     #Porownanie tekstu z patternem
