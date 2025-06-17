@@ -153,5 +153,5 @@ finalStar:
 	#Zamkniecie programu
 exit:
 	mov $60, %rax
-	xor %rdi, %rdi
+	mov $0, %rdi
 	syscall

@@ -32,7 +32,7 @@ innerLoop:
 	
 	cmp $'\n', %bl
 	je skipSwap
-	#if tekst[j]>tekst[j+1] swap
+	#aif tekst[j]>tekst[j+1] swap
 	cmp %al, %bl
 	jg skipSwap
 	movb %bl, (%rdx, %rsi, 1)

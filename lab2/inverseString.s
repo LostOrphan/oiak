@@ -19,9 +19,7 @@ loop:
 	mov (%rsi), %al
 	test %al, %al		#Warunek zakonczenia petli. bitwise AND operacja, szukamy zakonczenia stringu (zero)
 	jz koniec
-	cmp $' ', %al		#
-	je zapisz		#Hardcoded spacja i newline
-	cmp $'\n', %al		#
+	
 	je zapisz		#
 	cmp $'A', %al
 	jl skip
